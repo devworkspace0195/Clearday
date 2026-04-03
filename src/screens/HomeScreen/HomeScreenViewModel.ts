@@ -1,10 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppDispatch, RootState } from '../../store/store';
-import { setLoggedOut } from '../../store/slices/authSlice';
-import { storage } from '../../utils/storage';
-import { ASYNC_STORAGE_KEYS } from '../../constants';
-import logger from '../../utils/logger';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 import type { HomeUser, StatItem } from './HomeScreenModel';
 
 interface UseHomeScreenViewModelReturn {
@@ -12,8 +11,7 @@ interface UseHomeScreenViewModelReturn {
   greeting: string;
   avatarInitial: string;
   stats: StatItem[];
-  isLoading: boolean;
-  logout: () => Promise<void>;
+  navigateToProfile: () => void;
 }
 
 const STATS: StatItem[] = [
@@ -22,9 +20,12 @@ const STATS: StatItem[] = [
   { emoji: '🎯', value: '0', label: 'Goals' },
 ];
 
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
 export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isLoading } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
@@ -38,15 +39,9 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
     [user],
   );
 
-  const logout = useCallback(async (): Promise<void> => {
-    try {
-      await storage.remove(ASYNC_STORAGE_KEYS.IS_LOGGED_IN);
-      dispatch(setLoggedOut());
-    } catch (err) {
-      logger.error('logout failed', err);
-      dispatch(setLoggedOut());
-    }
-  }, [dispatch]);
+  const navigateToProfile = useCallback(() => {
+    navigation.navigate('Profile');
+  }, [navigation]);
 
-  return { user, greeting, avatarInitial, stats: STATS, isLoading, logout };
+  return { user, greeting, avatarInitial, stats: STATS, navigateToProfile };
 };

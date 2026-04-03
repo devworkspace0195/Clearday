@@ -7,12 +7,14 @@ import { useRestoreSession } from '../hooks/useRestoreSession';
 import LoginScreenView from '../screens/LoginScreen/LoginScreenView';
 import SignupScreenView from '../screens/SignupScreen/SignupScreenView';
 import HomeScreenView from '../screens/HomeScreen/HomeScreenView';
+import ProfileScreenView from '../screens/ProfileScreen/ProfileScreenView';
 import { COLORS } from '../constants';
 
 export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Home: undefined;
+  Profile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,7 +41,10 @@ const AppNavigator: React.FC = memo(() => {
         }}
       >
         {isLoggedIn ? (
-          <Stack.Screen name="Home" component={HomeScreenView} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreenView} />
+            <Stack.Screen name="Profile" component={ProfileScreenView} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreenView} />

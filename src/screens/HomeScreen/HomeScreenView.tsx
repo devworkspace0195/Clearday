@@ -1,19 +1,18 @@
 import React, { memo, useCallback } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Button from '../../components/Button/ButtonView';
 import { useTheme } from '../../context/ThemeContext';
 import { useHomeScreenViewModel } from './HomeScreenViewModel';
 import { homeScreenStyles } from './HomeScreenStyles';
 
 const HomeScreenView: React.FC = memo(() => {
   const { colors } = useTheme();
-  const { user, greeting, avatarInitial, stats, isLoading, logout } =
+  const { user, greeting, avatarInitial, stats, navigateToProfile } =
     useHomeScreenViewModel();
 
-  const handleLogout = useCallback(async () => {
-    await logout();
-  }, [logout]);
+  const handleProfilePress = useCallback(() => {
+    navigateToProfile();
+  }, [navigateToProfile]);
 
   return (
     <SafeAreaView
@@ -32,13 +31,17 @@ const HomeScreenView: React.FC = memo(() => {
               {user?.name ?? 'User'}
             </Text>
           </View>
-          <View
+          <TouchableOpacity
             style={[homeScreenStyles.avatarButton, { backgroundColor: colors.primary }]}
+            onPress={handleProfilePress}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile"
           >
             <Text style={[homeScreenStyles.avatarInitial, { color: colors.white }]}>
               {avatarInitial}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View style={homeScreenStyles.statsRow}>
@@ -69,15 +72,6 @@ const HomeScreenView: React.FC = memo(() => {
           <Text style={[homeScreenStyles.welcomeSubtitle, { color: `${colors.white}CC` }]}>
             Tasks, notes and activities will appear here. Start by adding your first task.
           </Text>
-        </View>
-
-        <View style={homeScreenStyles.logoutButton}>
-          <Button
-            label="Sign Out"
-            onPress={handleLogout}
-            variant="outline"
-            isLoading={isLoading}
-          />
         </View>
       </ScrollView>
     </SafeAreaView>
