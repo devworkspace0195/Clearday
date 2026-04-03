@@ -7,7 +7,7 @@ import { homeScreenStyles } from './HomeScreenStyles';
 
 const HomeScreenView: React.FC = memo(() => {
   const { colors } = useTheme();
-  const { user, greeting, avatarInitial, stats, navigateToProfile } =
+  const { user, greeting, avatarInitial, stats, navigateToProfile, navigateToSection } =
     useHomeScreenViewModel();
 
   const handleProfilePress = useCallback(() => {
@@ -46,18 +46,22 @@ const HomeScreenView: React.FC = memo(() => {
 
         <View style={homeScreenStyles.statsRow}>
           {stats.map(stat => (
-            <View
+            <TouchableOpacity
               key={stat.label}
               style={[homeScreenStyles.statCard, { backgroundColor: colors.surface }]}
+              onPress={() => navigateToSection(stat.label as 'Tasks' | 'Notes' | 'Reminders')}
+              activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel={`Open ${stat.label}`}
             >
               <Text style={homeScreenStyles.statEmoji}>{stat.emoji}</Text>
-              <Text style={[homeScreenStyles.statValue, { color: colors.textPrimary }]}>
+              <Text style={[homeScreenStyles.statValue, { color: colors.textPrimary }]}> 
                 {stat.value}
               </Text>
-              <Text style={[homeScreenStyles.statLabel, { color: colors.textSecondary }]}>
+              <Text style={[homeScreenStyles.statLabel, { color: colors.textSecondary }]}> 
                 {stat.label}
               </Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 

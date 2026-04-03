@@ -8,6 +8,9 @@ import LoginScreenView from '../screens/LoginScreen/LoginScreenView';
 import SignupScreenView from '../screens/SignupScreen/SignupScreenView';
 import HomeScreenView from '../screens/HomeScreen/HomeScreenView';
 import ProfileScreenView from '../screens/ProfileScreen/ProfileScreenView';
+import TaskScreenView from '../screens/TaskScreen/TaskScreenView';
+import NoteScreenView from '../screens/NoteScreen/NoteScreenView';
+import ReminderScreenView from '../screens/ReminderScreen/ReminderScreenView';
 import { COLORS } from '../constants';
 
 export type RootStackParamList = {
@@ -15,6 +18,9 @@ export type RootStackParamList = {
   Signup: undefined;
   Home: undefined;
   Profile: undefined;
+  Task: undefined;
+  Note: undefined;
+  Reminder: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +50,9 @@ const AppNavigator: React.FC = memo(() => {
           <>
             <Stack.Screen name="Home" component={HomeScreenView} />
             <Stack.Screen name="Profile" component={ProfileScreenView} />
+            <Stack.Screen name="Task" component={TaskScreenView} />
+            <Stack.Screen name="Note" component={NoteScreenView} />
+            <Stack.Screen name="Reminder" component={ReminderScreenView} />
           </>
         ) : (
           <>

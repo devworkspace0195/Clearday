@@ -12,12 +12,13 @@ interface UseHomeScreenViewModelReturn {
   avatarInitial: string;
   stats: StatItem[];
   navigateToProfile: () => void;
+  navigateToSection: (section: 'Tasks' | 'Notes' | 'Reminders') => void;
 }
 
 const STATS: StatItem[] = [
   { emoji: '✅', value: '0', label: 'Tasks' },
   { emoji: '📝', value: '0', label: 'Notes' },
-  { emoji: '🎯', value: '0', label: 'Goals' },
+  { emoji: '🎯', value: '0', label: 'Reminders' },
 ];
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -43,5 +44,25 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
     navigation.navigate('Profile');
   }, [navigation]);
 
-  return { user, greeting, avatarInitial, stats: STATS, navigateToProfile };
+  const navigateToSection = useCallback(
+    (section: 'Tasks' | 'Notes' | 'Reminders') => {
+      if (section === 'Tasks') {
+        navigation.navigate('Task');
+      } else if (section === 'Notes') {
+        navigation.navigate('Note');
+      } else {
+        navigation.navigate('Reminder');
+      }
+    },
+    [navigation],
+  );
+
+  return {
+    user,
+    greeting,
+    avatarInitial,
+    stats: STATS,
+    navigateToProfile,
+    navigateToSection,
+  };
 };
