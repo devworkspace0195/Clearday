@@ -1,0 +1,97 @@
+# Clearday — Claude Code Briefing
+
+## Project
+React Native app (TypeScript) — personal task, note & activity tracker.
+Latest React Native version. MVVM architecture per feature.
+
+## Architecture — MVVM (strict)
+Each feature lives in `src/features/<featureName>/` with this structure:
+- `model/` — TypeScript types, interfaces, data shapes
+- `viewmodel/` — hooks, business logic, API calls, state management
+- `view/` — UI components (no logic, only renders)
+- `styles/` — StyleSheet definitions (no inline styles)
+- `story/` — Storybook stories for that feature
+
+## Folder structure
+src/
+  features/       # auth, tasks, notes, dashboard, settings, camera
+  components/     # reusable: Button, Input, Card, Skeleton, Badge, EmptyState, Avatar, Loader
+  store/          # Redux Toolkit slices + store config
+  context/        # ThemeContext (dark/light)
+  navigation/     # React Navigation stack + tab config
+  hooks/          # shared custom hooks
+  utils/          # helpers, formatters, constants
+  constants/      # colors, spacing, typography, API keys (no hardcoding elsewhere)
+  types/          # global TypeScript types
+
+## TypeScript
+- Strict mode ON (`strict: true` in tsconfig)
+- No `any` — ever
+- All props typed with interfaces
+- All API responses typed
+
+## State management
+- Redux Toolkit — global state (auth, tasks, notes)
+- Context API — theme only
+- No prop drilling beyond 2 levels
+
+## Styling
+- All styles in `styles/` folder using `StyleSheet.create()`
+- No inline styles
+- Responsive layout using Dimensions or react-native-responsive-screen
+- Dark and light theme support via ThemeContext
+
+## Reusable components
+Every UI element must be a reusable component in `src/components/`.
+Never rewrite a button, input, card, loader, skeleton inline.
+Components must accept and use theme props.
+
+## Performance rules
+- `React.memo` on every list item component
+- `useCallback` for all functions passed as props
+- `useMemo` for derived/computed values
+- FlatList: always set `keyExtractor`, `getItemLayout` where possible, `removeClippedSubviews`
+- Lazy load screens using React.lazy or dynamic imports
+- No anonymous functions in JSX
+
+## API & data loading
+- Every screen that loads from API must show a Skeleton loader while loading
+- Every API call must have error handling with a user-facing error state
+- Use a custom `useApi` hook for all API calls (loading / data / error states)
+
+## Security
+- No hardcoded API keys — use `.env` with `react-native-config`
+- Sensitive data (tokens, user info) stored in `react-native-keychain`, not AsyncStorage
+- Input sanitization on all form fields
+- Certificate pinning for production API calls
+
+## Testing — Jest
+- Every reusable component has a snapshot test
+- Every viewmodel hook has a unit test
+- Every util function has a unit test
+- Test files live next to the file: `Button.test.tsx` beside `Button.tsx`
+
+## Storybook
+- Every component in `src/components/` has a `.stories.tsx` file
+- Every feature's main view has a story
+
+## Code quality
+- ESLint + Prettier enforced
+- No unused imports
+- No console.log in production code (use a logger util)
+- Meaningful variable names — no `x`, `temp`, `data2`
+- Functions do one thing
+
+## Naming conventions
+- Components: PascalCase
+- Hooks: camelCase starting with `use`
+- Files: PascalCase for components, camelCase for utils/hooks
+- Constants: UPPER_SNAKE_CASE
+
+## DO NOT
+- No class components
+- No inline styles
+- No `any` type
+- No hardcoded strings/colors/sizes outside constants
+- No logic inside view files
+- No direct API calls inside view files
