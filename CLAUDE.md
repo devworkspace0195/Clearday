@@ -5,21 +5,32 @@ React Native app (TypeScript) — personal task, note & activity tracker.
 Latest React Native version. MVVM architecture per feature.
 
 ## Architecture — MVVM (strict)
-Each feature lives in `src/features/<featureName>/` with this structure:
-- `model/` — TypeScript types, interfaces, data shapes
-- `viewmodel/` — hooks, business logic, API calls, state management
-- `view/` — UI components (no logic, only renders)
-- `styles/` — StyleSheet definitions (no inline styles)
-- `story/` — Storybook stories for that feature
+Each screen and component has its own folder containing exactly 5 files.
+All filenames are `<FolderName><Suffix>` — every file is PascalCase.
+
+```
+ExampleFolder/
+  ExampleFolder.stories.tsx   # storybook story
+  ExampleFolderView.tsx       # view — renders only, zero logic
+  ExampleFolderViewModel.ts   # viewmodel — all business logic, state, API calls (exports a use* hook)
+  ExampleFolderStyles.ts      # styles — StyleSheet.create() only
+  ExampleFolderModel.ts       # model — TypeScript types and interfaces
+```
+
+Examples of correct filenames:
+- `LoginScreen/` → `LoginScreenView.tsx`, `LoginScreenViewModel.ts`, `LoginScreenStyles.ts`, `LoginScreenModel.ts`, `LoginScreen.stories.tsx`
+- `Button/` → `ButtonView.tsx`, `ButtonViewModel.ts`, `ButtonStyles.ts`, `ButtonModel.ts`, `Button.stories.tsx`
+
+Same pattern applies to every screen in `src/screens/` and every component in `src/components/`.
 
 ## Folder structure
 src/
-  features/       # auth, tasks, notes, dashboard, settings, camera
-  components/     # reusable: Button, Input, Card, Skeleton, Badge, EmptyState, Avatar, Loader
+  screens/        # one folder per screen (LoginScreen, HomeScreen, etc.)
+  components/     # one folder per reusable component (Button, Input, Card, etc.)
   store/          # Redux Toolkit slices + store config
   context/        # ThemeContext (dark/light)
   navigation/     # React Navigation stack + tab config
-  hooks/          # shared custom hooks
+  hooks/          # shared custom hooks (e.g. useRestoreSession)
   utils/          # helpers, formatters, constants
   constants/      # colors, spacing, typography, API keys (no hardcoding elsewhere)
   types/          # global TypeScript types
@@ -69,11 +80,11 @@ Components must accept and use theme props.
 - Every reusable component has a snapshot test
 - Every viewmodel hook has a unit test
 - Every util function has a unit test
-- Test files live next to the file: `Button.test.tsx` beside `Button.tsx`
+- Test files live next to the file: `ButtonView.test.tsx` beside `ButtonView.tsx`
 
 ## Storybook
-- Every component in `src/components/` has a `.stories.tsx` file
-- Every feature's main view has a story
+- Every component in `src/components/<ComponentName>/` has a `ComponentName.stories.tsx` file
+- Every screen in `src/screens/<ScreenName>/` has a `ScreenName.stories.tsx` file
 
 ## Code quality
 - ESLint + Prettier enforced
@@ -83,9 +94,10 @@ Components must accept and use theme props.
 - Functions do one thing
 
 ## Naming conventions
-- Components: PascalCase
-- Hooks: camelCase starting with `use`
-- Files: PascalCase for components, camelCase for utils/hooks
+- All screen/component files: `<FolderName><Suffix>.tsx/ts` — always PascalCase
+- Suffixes: `View`, `ViewModel`, `Styles`, `Model`, `.stories`
+- ViewModel hook exports: camelCase starting with `use` (e.g. `useLoginScreenViewModel`)
+- Utility/hook files outside screens and components: camelCase (e.g. `useRestoreSession.ts`)
 - Constants: UPPER_SNAKE_CASE
 
 ## DO NOT
@@ -95,3 +107,10 @@ Components must accept and use theme props.
 - No hardcoded strings/colors/sizes outside constants
 - No logic inside view files
 - No direct API calls inside view files
+
+## Dependency management
+- After adding any new JS dependency, always run `yarn install` automatically
+- After adding any new native dependency (anything that touches iOS/Android), 
+  always run `cd ios && pod install && cd ..` automatically
+- Never just add to package.json and leave it — always install immediately
+- If unsure whether a package needs pod install, run it anyway to be safe
