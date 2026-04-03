@@ -87,4 +87,25 @@ export const homeScreenStyles = StyleSheet.create({
     marginTop: SPACING.xl,
     marginBottom: SPACING.lg,
   },
+
+  // ─── Due Tomorrow section ─────────────────────────────────
+  dueTomorrowSection: {
+    marginBottom: SPACING.md,
+  },
+  dueTomorrowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    padding: SPACING.md,
+    marginBottom: SPACING.xs,
+    gap: SPACING.sm,
+  },
+  dueTomorrowItemEmoji: {
+    fontSize: 16,
+  },
+  dueTomorrowItemText: {
+    flex: 1,
+    fontSize: FONT_SIZE.sm,
+    fontWeight: FONT_WEIGHT.medium,
+  },
 });

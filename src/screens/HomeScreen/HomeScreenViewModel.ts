@@ -1,9 +1,11 @@
 import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppDispatch, RootState } from '../../store/store';
+import { RootState } from '../../store/store';
 import { RootStackParamList } from '../../navigation/AppNavigator';
+import { isToday, isTomorrow } from '../../utils/dateUtils';
+import type { Task } from '../TaskScreen/TaskScreenModel';
 import type { HomeUser, StatItem } from './HomeScreenModel';
 
 interface UseHomeScreenViewModelReturn {
@@ -11,21 +13,17 @@ interface UseHomeScreenViewModelReturn {
   greeting: string;
   avatarInitial: string;
   stats: StatItem[];
+  tasksDueToday: Task[];
+  tasksDueTomorrow: Task[];
   navigateToProfile: () => void;
   navigateToSection: (section: 'Tasks' | 'Notes' | 'Reminders') => void;
 }
 
-const STATS: StatItem[] = [
-  { emoji: '✅', value: '0', label: 'Tasks' },
-  { emoji: '📝', value: '0', label: 'Notes' },
-  { emoji: '🎯', value: '0', label: 'Reminders' },
-];
-
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
-  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const greeting = useMemo(() => {
@@ -38,6 +36,30 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
   const avatarInitial = useMemo(
     () => (user?.name ? user.name.charAt(0).toUpperCase() : '?'),
     [user],
+  );
+
+  const activeTaskCount = useMemo(
+    () => tasks.filter(t => !t.completed).length,
+    [tasks],
+  );
+
+  const stats = useMemo<StatItem[]>(
+    () => [
+      { emoji: '✅', value: String(activeTaskCount), label: 'Tasks' },
+      { emoji: '📝', value: '0', label: 'Notes' },
+      { emoji: '🎯', value: '0', label: 'Reminders' },
+    ],
+    [activeTaskCount],
+  );
+
+  const tasksDueToday = useMemo(
+    () => tasks.filter(t => !t.completed && t.dueDate !== undefined && isToday(t.dueDate)),
+    [tasks],
+  );
+
+  const tasksDueTomorrow = useMemo(
+    () => tasks.filter(t => !t.completed && t.dueDate !== undefined && isTomorrow(t.dueDate)),
+    [tasks],
   );
 
   const navigateToProfile = useCallback(() => {
@@ -61,7 +83,9 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
     user,
     greeting,
     avatarInitial,
-    stats: STATS,
+    stats,
+    tasksDueToday,
+    tasksDueTomorrow,
     navigateToProfile,
     navigateToSection,
   };

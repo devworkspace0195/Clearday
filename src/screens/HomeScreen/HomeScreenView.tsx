@@ -7,7 +7,7 @@ import { homeScreenStyles } from './HomeScreenStyles';
 
 const HomeScreenView: React.FC = memo(() => {
   const { colors } = useTheme();
-  const { user, greeting, avatarInitial, stats, navigateToProfile, navigateToSection } =
+  const { user, greeting, avatarInitial, stats, tasksDueToday, tasksDueTomorrow, navigateToProfile, navigateToSection } =
     useHomeScreenViewModel();
 
   const handleProfilePress = useCallback(() => {
@@ -65,18 +65,65 @@ const HomeScreenView: React.FC = memo(() => {
           ))}
         </View>
 
-        <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
-          Today's overview
-        </Text>
+        {tasksDueToday.length > 0 ? (
+          <View style={homeScreenStyles.dueTomorrowSection}>
+            <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
+              Due Today
+            </Text>
+            {tasksDueToday.map(task => (
+              <View
+                key={task.id}
+                style={[homeScreenStyles.dueTomorrowItem, { backgroundColor: colors.surface }]}
+              >
+                <Text style={homeScreenStyles.dueTomorrowItemEmoji}>📅</Text>
+                <Text
+                  style={[homeScreenStyles.dueTomorrowItemText, { color: colors.textPrimary }]}
+                  numberOfLines={1}
+                >
+                  {task.title}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
 
-        <View style={[homeScreenStyles.welcomeCard, { backgroundColor: colors.primary }]}>
-          <Text style={[homeScreenStyles.welcomeTitle, { color: colors.white }]}>
-            You're all set! ☀️
-          </Text>
-          <Text style={[homeScreenStyles.welcomeSubtitle, { color: `${colors.white}CC` }]}>
-            Tasks, notes and activities will appear here. Start by adding your first task.
-          </Text>
-        </View>
+        {tasksDueTomorrow.length > 0 ? (
+          <View style={homeScreenStyles.dueTomorrowSection}>
+            <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
+              Due Tomorrow
+            </Text>
+            {tasksDueTomorrow.map(task => (
+              <View
+                key={task.id}
+                style={[homeScreenStyles.dueTomorrowItem, { backgroundColor: colors.surface }]}
+              >
+                <Text style={homeScreenStyles.dueTomorrowItemEmoji}>📅</Text>
+                <Text
+                  style={[homeScreenStyles.dueTomorrowItemText, { color: colors.textPrimary }]}
+                  numberOfLines={1}
+                >
+                  {task.title}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {tasksDueToday.length === 0 && tasksDueTomorrow.length === 0 ? (
+          <>
+            <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
+              Today's overview
+            </Text>
+            <View style={[homeScreenStyles.welcomeCard, { backgroundColor: colors.primary }]}>
+              <Text style={[homeScreenStyles.welcomeTitle, { color: colors.white }]}>
+                You're all set! ☀️
+              </Text>
+              <Text style={[homeScreenStyles.welcomeSubtitle, { color: `${colors.white}CC` }]}>
+                There is nothing due today. Take a moment to relax or plan for tomorrow. You've got this! 💪
+              </Text>
+            </View>
+          </>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
