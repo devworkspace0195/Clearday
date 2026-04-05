@@ -3,6 +3,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useInputViewModel } from './InputViewModel';
 import { inputStyles } from './InputStyles';
+import { STRINGS } from '../../constants';
 import type { InputProps } from './InputModel';
 
 const InputView: React.FC<InputProps> = memo(
@@ -53,11 +54,15 @@ const InputView: React.FC<InputProps> = memo(
           {isSecure && (
             <TouchableOpacity
               onPress={toggleVisibility}
-              accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
+              accessibilityLabel={
+                isPasswordVisible
+                  ? STRINGS.INPUT.A11Y_HIDE_PASSWORD
+                  : STRINGS.INPUT.A11Y_SHOW_PASSWORD
+              }
               style={inputStyles.eyeButton}
             >
               <Text style={[inputStyles.eyeText, { color: colors.textSecondary }]}>
-                {isPasswordVisible ? 'Hide' : 'Show'}
+                {isPasswordVisible ? STRINGS.INPUT.HIDE_PASSWORD : STRINGS.INPUT.SHOW_PASSWORD}
               </Text>
             </TouchableOpacity>
           )}

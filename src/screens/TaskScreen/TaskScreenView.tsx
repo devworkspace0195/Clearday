@@ -15,6 +15,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useTaskScreenViewModel } from './TaskScreenViewModel';
 import { taskScreenStyles } from './TaskScreenStyles';
 import { formatDueDate, todayStart } from '../../utils/dateUtils';
+import { STRINGS } from '../../constants';
 import { FILTER_TABS, type Task, type TaskFilter } from './TaskScreenModel';
 
 // ─── Task list item ───────────────────────────────────────────────────────────
@@ -62,7 +63,9 @@ const TaskItem: React.FC<TaskItemProps> = memo(
             accessibilityLabel={task.title}
           >
             {task.completed ? (
-              <Text style={[taskScreenStyles.checkmark, { color: '#fff' }]}>✓</Text>
+              <Text style={[taskScreenStyles.checkmark, { color: '#fff' }]}>
+                {STRINGS.TASK.ICON_CHECKMARK}
+              </Text>
             ) : null}
           </TouchableOpacity>
 
@@ -79,7 +82,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(
             </Text>
             {task.dueDate ? (
               <Text style={[taskScreenStyles.taskDueDate, { color: subtleColor }]}>
-                📅 {formatDueDate(task.dueDate)}
+                {STRINGS.TASK.ICON_DATE} {formatDueDate(task.dueDate)}
               </Text>
             ) : null}
             {task.imageUri ? (
@@ -95,9 +98,11 @@ const TaskItem: React.FC<TaskItemProps> = memo(
             onPress={handleDelete}
             style={[taskScreenStyles.deleteButton, { backgroundColor: deleteBackground }]}
             accessibilityRole="button"
-            accessibilityLabel={`Delete ${task.title}`}
+            accessibilityLabel={STRINGS.TASK.a11yDeleteTask(task.title)}
           >
-            <Text style={[taskScreenStyles.deleteIcon, { color: subtleColor }]}>✕</Text>
+            <Text style={[taskScreenStyles.deleteIcon, { color: subtleColor }]}>
+              {STRINGS.TASK.ICON_REMOVE}
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={[taskScreenStyles.taskItemDivider, { backgroundColor: borderColor }]} />
@@ -118,17 +123,21 @@ interface EmptyStateProps {
 
 const EmptyState: React.FC<EmptyStateProps> = memo(
   ({ activeFilter, searchQuery, textColor, subtleColor }) => {
-    const emoji = searchQuery ? '🔍' : activeFilter === 'completed' ? '🎉' : '📋';
+    const emoji = searchQuery
+      ? STRINGS.TASK.EMPTY_SEARCH_EMOJI
+      : activeFilter === 'completed'
+        ? STRINGS.TASK.EMPTY_COMPLETED_EMOJI
+        : STRINGS.TASK.EMPTY_DEFAULT_EMOJI;
     const title = searchQuery
-      ? 'No results found'
+      ? STRINGS.TASK.EMPTY_SEARCH_TITLE
       : activeFilter === 'completed'
-        ? 'Nothing completed yet'
-        : 'No tasks yet';
+        ? STRINGS.TASK.EMPTY_COMPLETED_TITLE
+        : STRINGS.TASK.EMPTY_DEFAULT_TITLE;
     const subtitle = searchQuery
-      ? `No tasks matching "${searchQuery}"`
+      ? STRINGS.TASK.emptySearchSubtitle(searchQuery)
       : activeFilter === 'completed'
-        ? 'Complete a task and it will show up here.'
-        : 'Add your first task above to get started.';
+        ? STRINGS.TASK.EMPTY_COMPLETED_SUBTITLE
+        : STRINGS.TASK.EMPTY_DEFAULT_SUBTITLE;
 
     return (
       <View style={taskScreenStyles.emptyContainer}>
@@ -221,16 +230,16 @@ const TaskScreenView: React.FC = memo(() => {
           style={[taskScreenStyles.backButton, { backgroundColor: colors.surface }]}
           onPress={handleGoBack}
           accessibilityRole="button"
-          accessibilityLabel="Go back"
+          accessibilityLabel={STRINGS.TASK.A11Y_GO_BACK}
         >
-          <Text style={taskScreenStyles.backIcon}>←</Text>
+          <Text style={taskScreenStyles.backIcon}>{STRINGS.TASK.BACK_ICON}</Text>
         </TouchableOpacity>
         <View style={taskScreenStyles.headerTextGroup}>
           <Text style={[taskScreenStyles.title, { color: colors.textPrimary }]}>
-            Tasks
+            {STRINGS.TASK.TITLE}
           </Text>
           <Text style={[taskScreenStyles.subtitle, { color: colors.textSecondary }]}>
-            {activeCount} active · {completedCount} done
+            {STRINGS.TASK.subtitle(activeCount, completedCount)}
           </Text>
         </View>
       </View>
@@ -239,20 +248,23 @@ const TaskScreenView: React.FC = memo(() => {
       <View
         style={[taskScreenStyles.searchRow, { backgroundColor: colors.surface }]}
       >
-        <Text style={taskScreenStyles.searchIcon}>🔍</Text>
+        <Text style={taskScreenStyles.searchIcon}>{STRINGS.TASK.ICON_SEARCH}</Text>
         <TextInput
           style={[taskScreenStyles.searchInput, { color: colors.textPrimary }]}
-          placeholder="Search tasks…"
+          placeholder={STRINGS.TASK.SEARCH_PLACEHOLDER}
           placeholderTextColor={colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
           returnKeyType="search"
-          accessibilityLabel="Search tasks"
+          accessibilityLabel={STRINGS.TASK.A11Y_SEARCH}
         />
         {searchQuery.length > 0 ? (
-          <TouchableOpacity onPress={handleClearSearch} accessibilityLabel="Clear search">
+          <TouchableOpacity
+            onPress={handleClearSearch}
+            accessibilityLabel={STRINGS.TASK.A11Y_SEARCH_CLEAR}
+          >
             <Text style={[taskScreenStyles.searchClear, { color: colors.textSecondary }]}>
-              ✕
+              {STRINGS.TASK.ICON_REMOVE}
             </Text>
           </TouchableOpacity>
         ) : null}
@@ -294,37 +306,37 @@ const TaskScreenView: React.FC = memo(() => {
         <View style={taskScreenStyles.addInputRow}>
           <TextInput
             style={[taskScreenStyles.addInput, { color: colors.textPrimary }]}
-            placeholder="New task…"
+            placeholder={STRINGS.TASK.ADD_PLACEHOLDER}
             placeholderTextColor={colors.textSecondary}
             value={newTaskTitle}
             onChangeText={setNewTaskTitle}
             returnKeyType="done"
             onSubmitEditing={handleAddTask}
-            accessibilityLabel="New task title"
+            accessibilityLabel={STRINGS.TASK.A11Y_NEW_TASK}
           />
           <TouchableOpacity
             style={[taskScreenStyles.iconButton, { backgroundColor: colors.background }]}
             onPress={takePhoto}
             accessibilityRole="button"
-            accessibilityLabel="Take photo"
+            accessibilityLabel={STRINGS.TASK.A11Y_TAKE_PHOTO}
           >
-            <Text style={taskScreenStyles.iconButtonEmoji}>📷</Text>
+            <Text style={taskScreenStyles.iconButtonEmoji}>{STRINGS.TASK.ICON_CAMERA}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[taskScreenStyles.iconButton, { backgroundColor: colors.background }]}
             onPress={pickFromGallery}
             accessibilityRole="button"
-            accessibilityLabel="Choose from gallery"
+            accessibilityLabel={STRINGS.TASK.A11Y_GALLERY}
           >
-            <Text style={taskScreenStyles.iconButtonEmoji}>🖼️</Text>
+            <Text style={taskScreenStyles.iconButtonEmoji}>{STRINGS.TASK.ICON_GALLERY}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[taskScreenStyles.iconButton, { backgroundColor: colors.background }]}
             onPress={toggleDatePicker}
             accessibilityRole="button"
-            accessibilityLabel="Pick due date"
+            accessibilityLabel={STRINGS.TASK.A11Y_DATE_PICKER}
           >
-            <Text style={taskScreenStyles.iconButtonEmoji}>📅</Text>
+            <Text style={taskScreenStyles.iconButtonEmoji}>{STRINGS.TASK.ICON_DATE}</Text>
           </TouchableOpacity>
         </View>
 
@@ -334,8 +346,13 @@ const TaskScreenView: React.FC = memo(() => {
               <Text style={[taskScreenStyles.dateChipText, { color: colors.primary }]}>
                 {formatDueDate(selectedDate.getTime())}
               </Text>
-              <TouchableOpacity onPress={clearDate} accessibilityLabel="Remove due date">
-                <Text style={[taskScreenStyles.dateChipRemove, { color: colors.primary }]}>✕</Text>
+              <TouchableOpacity
+                onPress={clearDate}
+                accessibilityLabel={STRINGS.TASK.A11Y_REMOVE_DATE}
+              >
+                <Text style={[taskScreenStyles.dateChipRemove, { color: colors.primary }]}>
+                  {STRINGS.TASK.ICON_REMOVE}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -364,10 +381,10 @@ const TaskScreenView: React.FC = memo(() => {
                 { backgroundColor: colors.error },
               ]}
               onPress={removePendingImage}
-              accessibilityLabel="Remove image"
+              accessibilityLabel={STRINGS.TASK.A11Y_REMOVE_IMAGE}
             >
               <Text style={[taskScreenStyles.removeImageText, { color: colors.white }]}>
-                ✕
+                {STRINGS.TASK.ICON_REMOVE}
               </Text>
             </TouchableOpacity>
           </View>
@@ -385,7 +402,7 @@ const TaskScreenView: React.FC = memo(() => {
           onPress={handleAddTask}
           disabled={!newTaskTitle.trim()}
           accessibilityRole="button"
-          accessibilityLabel="Add task"
+          accessibilityLabel={STRINGS.TASK.A11Y_ADD_TASK}
         >
           <Text
             style={[
@@ -393,7 +410,7 @@ const TaskScreenView: React.FC = memo(() => {
               { color: newTaskTitle.trim() ? colors.white : colors.textSecondary },
             ]}
           >
-            Add Task
+            {STRINGS.TASK.ADD_BUTTON}
           </Text>
         </TouchableOpacity>
       </View>

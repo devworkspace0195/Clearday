@@ -14,6 +14,7 @@ import Input from '../../components/Input/InputView';
 import { useTheme } from '../../context/ThemeContext';
 import { useLoginScreenViewModel } from './LoginScreenViewModel';
 import { loginScreenStyles } from './LoginScreenStyles';
+import { STRINGS } from '../../constants';
 import type { RootStackParamList } from '../../navigation/AppNavigator';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
@@ -58,22 +59,22 @@ const LoginScreenView: React.FC<LoginScreenViewProps> = memo(({ navigation }) =>
             <View
               style={[loginScreenStyles.logoCircle, { backgroundColor: colors.primary }]}
             >
-              <Text style={loginScreenStyles.logoText}>☀️</Text>
+              <Text style={loginScreenStyles.logoText}>{STRINGS.APP.LOGO_EMOJI}</Text>
             </View>
             <Text style={[loginScreenStyles.appName, { color: colors.textPrimary }]}>
-              Clearday
+              {STRINGS.APP.NAME}
             </Text>
             <Text style={[loginScreenStyles.tagline, { color: colors.textSecondary }]}>
-              Your day, your way.
+              {STRINGS.APP.TAGLINE}
             </Text>
           </View>
 
           <View style={[loginScreenStyles.card, { backgroundColor: colors.surface }]}>
             <Text style={[loginScreenStyles.cardTitle, { color: colors.textPrimary }]}>
-              Welcome back
+              {STRINGS.LOGIN.TITLE}
             </Text>
             <Text style={[loginScreenStyles.cardSubtitle, { color: colors.textSecondary }]}>
-              Sign in to continue
+              {STRINGS.LOGIN.SUBTITLE}
             </Text>
 
             {error ? (
@@ -90,25 +91,25 @@ const LoginScreenView: React.FC<LoginScreenViewProps> = memo(({ navigation }) =>
             ) : null}
 
             <Input
-              label="Email"
+              label={STRINGS.LOGIN.EMAIL_LABEL}
               value={email}
               onChangeText={setEmail}
-              placeholder="you@example.com"
+              placeholder={STRINGS.LOGIN.EMAIL_PLACEHOLDER}
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
             <Input
-              label="Password"
+              label={STRINGS.LOGIN.PASSWORD_LABEL}
               value={password}
               onChangeText={setPassword}
-              placeholder="••••••••"
+              placeholder={STRINGS.LOGIN.PASSWORD_PLACEHOLDER}
               isSecure
             />
 
             <View style={loginScreenStyles.buttonContainer}>
               <Button
-                label="Sign In"
+                label={STRINGS.LOGIN.BUTTON}
                 onPress={handleLogin}
                 isLoading={isLoading}
                 isDisabled={!email.trim() || !password}
@@ -118,11 +119,11 @@ const LoginScreenView: React.FC<LoginScreenViewProps> = memo(({ navigation }) =>
 
           <View style={loginScreenStyles.footerRow}>
             <Text style={[loginScreenStyles.footerText, { color: colors.textSecondary }]}>
-              Don't have an account?
+              {STRINGS.LOGIN.FOOTER_TEXT}
             </Text>
             <TouchableOpacity onPress={handleGoToSignup}>
               <Text style={[loginScreenStyles.footerLink, { color: colors.primary }]}>
-                Sign up
+                {STRINGS.LOGIN.FOOTER_LINK}
               </Text>
             </TouchableOpacity>
           </View>

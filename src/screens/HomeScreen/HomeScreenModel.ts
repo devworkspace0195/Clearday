@@ -8,3 +8,9 @@ export interface StatItem {
   value: string;
   label: string;
 }
+
+export interface UpcomingTask {
+  id: string;
+  title: string;
+  dateLabel: string;
+}

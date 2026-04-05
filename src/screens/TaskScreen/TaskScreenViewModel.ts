@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -8,6 +8,8 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker';
 import type { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { todayStart } from '../../utils/dateUtils';
+import { STRINGS } from '../../constants';
 import { AppDispatch, RootState } from '../../store/store';
 import {
   addTask as addTaskAction,
@@ -128,7 +130,14 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
   }, [newTaskTitle, pendingImageUri, selectedDate, dispatch]);
 
   const toggleDatePicker = useCallback(() => {
-    setShowDatePicker(prev => !prev);
+    setShowDatePicker(prev => {
+      if (!prev) {
+        // Pre-select today when opening so iOS inline picker always has a value,
+        // even if the user picks today without triggering onChange.
+        setSelectedDate(current => current ?? todayStart());
+      }
+      return !prev;
+    });
   }, []);
 
   const clearDate = useCallback(() => {
@@ -182,6 +191,21 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
         quality: 0.8,
         saveToPhotos: false,
       });
+      if (result.errorCode === 'camera_unavailable') {
+        Alert.alert(
+          STRINGS.TASK.CAMERA_UNAVAILABLE_TITLE,
+          STRINGS.TASK.CAMERA_UNAVAILABLE_MSG,
+          [
+            { text: STRINGS.TASK.CAMERA_UNAVAILABLE_CANCEL_BTN, style: 'cancel' },
+            { text: STRINGS.TASK.CAMERA_UNAVAILABLE_GALLERY_BTN, onPress: pickFromGallery },
+          ],
+        );
+        return;
+      }
+      if (result.errorCode === 'permission') {
+        Alert.alert(STRINGS.TASK.CAMERA_PERMISSION_TITLE, STRINGS.TASK.CAMERA_PERMISSION_MSG);
+        return;
+      }
       const uri = result.assets?.[0]?.uri;
       if (uri) {
         setPendingImageUri(uri);
@@ -189,7 +213,7 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
     } catch (err) {
       logger.error('takePhoto failed', err);
     }
-  }, []);
+  }, [pickFromGallery]);
 
   const removePendingImage = useCallback(() => {
     setPendingImageUri(undefined);

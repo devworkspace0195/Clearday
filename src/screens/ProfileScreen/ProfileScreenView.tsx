@@ -6,6 +6,7 @@ import Button from '../../components/Button/ButtonView';
 import SwitchView from '../../components/Switch/SwitchView';
 import { useProfileScreenViewModel } from './ProfileScreenViewModel';
 import { profileScreenStyles } from './ProfileScreenStyles';
+import { STRINGS } from '../../constants';
 
 const ProfileScreenView: React.FC = memo(() => {
   const { colors } = useTheme();
@@ -39,27 +40,27 @@ const ProfileScreenView: React.FC = memo(() => {
             onPress={handleBackPress}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel="Go back"
+            accessibilityLabel={STRINGS.PROFILE.A11Y_GO_BACK}
             style={profileScreenStyles.backButton}
           >
             <Text style={[profileScreenStyles.backArrow, { color: colors.textPrimary }]}>
-              ← Back
+              {STRINGS.PROFILE.BACK}
             </Text>
           </TouchableOpacity>
           <View style={profileScreenStyles.headerContent}>
             <Text style={[profileScreenStyles.headerTitle, { color: colors.textPrimary }]}>
-              Profile
+              {STRINGS.PROFILE.TITLE}
             </Text>
             <View style={profileScreenStyles.userInfo}>
               <Text
                 style={[profileScreenStyles.userName, { color: colors.textPrimary }]}
               >
-                {user?.name ?? 'User'}
+                {user?.name ?? STRINGS.PROFILE.USER_NAME_FALLBACK}
               </Text>
               <Text
                 style={[profileScreenStyles.userEmail, { color: colors.textSecondary }]}
               >
-                {user?.email ?? 'user@example.com'}
+                {user?.email ?? STRINGS.PROFILE.USER_EMAIL_FALLBACK}
               </Text>
             </View>
           </View>
@@ -74,13 +75,13 @@ const ProfileScreenView: React.FC = memo(() => {
           <Text
             style={[profileScreenStyles.sectionTitle, { color: colors.textPrimary }]}
           >
-            Settings
+            {STRINGS.PROFILE.SECTION_SETTINGS}
           </Text>
           <View style={profileScreenStyles.settingRow}>
             <Text
               style={[profileScreenStyles.settingLabel, { color: colors.textPrimary }]}
             >
-              {isDarkMode ? '🌙 Dark Theme' : '☀️ Light Theme'}
+              {isDarkMode ? STRINGS.PROFILE.THEME_DARK : STRINGS.PROFILE.THEME_LIGHT}
             </Text>
             <SwitchView
               value={isDarkMode}
@@ -91,7 +92,7 @@ const ProfileScreenView: React.FC = memo(() => {
 
         <View style={profileScreenStyles.signOutButton}>
           <Button
-            label="Sign Out"
+            label={STRINGS.PROFILE.SIGN_OUT}
             onPress={handleLogout}
             variant="outline"
             isLoading={isLoading}

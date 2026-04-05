@@ -4,17 +4,16 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootState } from '../../store/store';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import { isToday, isTomorrow } from '../../utils/dateUtils';
-import type { Task } from '../TaskScreen/TaskScreenModel';
-import type { HomeUser, StatItem } from './HomeScreenModel';
+import { formatDueDate, isToday, isTomorrow } from '../../utils/dateUtils';
+import type { HomeUser, StatItem, UpcomingTask } from './HomeScreenModel';
+
 
 interface UseHomeScreenViewModelReturn {
   user: HomeUser | null;
   greeting: string;
   avatarInitial: string;
   stats: StatItem[];
-  tasksDueToday: Task[];
-  tasksDueTomorrow: Task[];
+  upcomingTasks: UpcomingTask[];
   navigateToProfile: () => void;
   navigateToSection: (section: 'Tasks' | 'Notes' | 'Reminders') => void;
 }
@@ -24,6 +23,7 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'H
 export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
   const { user } = useSelector((state: RootState) => state.auth);
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const notes = useSelector((state: RootState) => state.notes.notes);
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const greeting = useMemo(() => {
@@ -46,19 +46,23 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
   const stats = useMemo<StatItem[]>(
     () => [
       { emoji: '✅', value: String(activeTaskCount), label: 'Tasks' },
-      { emoji: '📝', value: '0', label: 'Notes' },
+      { emoji: '📝', value: String(notes.length), label: 'Notes' },
       { emoji: '🎯', value: '0', label: 'Reminders' },
     ],
-    [activeTaskCount],
+    [activeTaskCount, notes.length],
   );
 
-  const tasksDueToday = useMemo(
-    () => tasks.filter(t => !t.completed && t.dueDate !== undefined && isToday(t.dueDate)),
-    [tasks],
-  );
-
-  const tasksDueTomorrow = useMemo(
-    () => tasks.filter(t => !t.completed && t.dueDate !== undefined && isTomorrow(t.dueDate)),
+  const upcomingTasks = useMemo(
+    () => tasks.reduce<UpcomingTask[]>((acc, t) => {
+      if (
+        !t.completed &&
+        t.dueDate !== undefined &&
+        (isToday(t.dueDate) || isTomorrow(t.dueDate))
+      ) {
+        acc.push({ id: t.id, title: t.title, dateLabel: formatDueDate(t.dueDate) });
+      }
+      return acc;
+    }, []),
     [tasks],
   );
 
@@ -84,8 +88,7 @@ export const useHomeScreenViewModel = (): UseHomeScreenViewModelReturn => {
     greeting,
     avatarInitial,
     stats,
-    tasksDueToday,
-    tasksDueTomorrow,
+    upcomingTasks,
     navigateToProfile,
     navigateToSection,
   };

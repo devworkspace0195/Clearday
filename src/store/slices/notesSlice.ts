@@ -1,0 +1,32 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { Note } from '../../screens/NoteScreen/NoteScreenModel';
+
+interface NotesState {
+  notes: Note[];
+}
+
+const initialState: NotesState = {
+  notes: [],
+};
+
+const notesSlice = createSlice({
+  name: 'notes',
+  initialState,
+  reducers: {
+    addNote: (state, action: PayloadAction<Note>) => {
+      state.notes.unshift(action.payload);
+    },
+    updateNote: (state, action: PayloadAction<Note>) => {
+      const index = state.notes.findIndex(n => n.id === action.payload.id);
+      if (index !== -1) {
+        state.notes[index] = action.payload;
+      }
+    },
+    deleteNote: (state, action: PayloadAction<string>) => {
+      state.notes = state.notes.filter(n => n.id !== action.payload);
+    },
+  },
+});
+
+export const { addNote, updateNote, deleteNote } = notesSlice.actions;
+export default notesSlice.reducer;

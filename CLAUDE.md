@@ -32,7 +32,7 @@ src/
   navigation/     # React Navigation stack + tab config
   hooks/          # shared custom hooks (e.g. useRestoreSession)
   utils/          # helpers, formatters, constants
-  constants/      # colors, spacing, typography, API keys (no hardcoding elsewhere)
+  constants/      # colors, spacing, typography, strings, API keys (no hardcoding elsewhere)
   types/          # global TypeScript types
 
 ## TypeScript
@@ -100,11 +100,19 @@ Components must accept and use theme props.
 - Utility/hook files outside screens and components: camelCase (e.g. `useRestoreSession.ts`)
 - Constants: UPPER_SNAKE_CASE
 
+## Strings
+- All user-facing strings live in `src/constants/strings.ts` and are exported via `src/constants/index.ts`
+- Import as `import { STRINGS } from '../../constants'`
+- Organised by screen/component: `STRINGS.LOGIN`, `STRINGS.SIGNUP`, `STRINGS.HOME`, `STRINGS.PROFILE`, `STRINGS.TASK`, `STRINGS.INPUT`, `STRINGS.APP`
+- Static strings are UPPER_SNAKE_CASE keys; dynamic strings (requiring arguments) are camelCase functions on the same object
+- Never hardcode a user-facing string directly in a view file — always reference `STRINGS`
+
 ## DO NOT
 - No class components
 - No inline styles
 - No `any` type
 - No hardcoded strings/colors/sizes outside constants
+- No hardcoded user-facing strings in view files — use `STRINGS` from `src/constants/strings.ts`
 - No logic inside view files
 - No direct API calls inside view files
 

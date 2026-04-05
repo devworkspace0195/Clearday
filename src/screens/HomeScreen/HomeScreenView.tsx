@@ -4,11 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useHomeScreenViewModel } from './HomeScreenViewModel';
 import { homeScreenStyles } from './HomeScreenStyles';
+import { STRINGS } from '../../constants';
 
 const HomeScreenView: React.FC = memo(() => {
   const { colors } = useTheme();
-  const { user, greeting, avatarInitial, stats, tasksDueToday, tasksDueTomorrow, navigateToProfile, navigateToSection } =
-    useHomeScreenViewModel();
+  const {
+    user,
+    greeting,
+    avatarInitial,
+    stats,
+    upcomingTasks,
+    navigateToProfile,
+    navigateToSection,
+  } = useHomeScreenViewModel();
 
   const handleProfilePress = useCallback(() => {
     navigateToProfile();
@@ -28,7 +36,7 @@ const HomeScreenView: React.FC = memo(() => {
               {greeting} 👋
             </Text>
             <Text style={[homeScreenStyles.userName, { color: colors.textPrimary }]}>
-              {user?.name ?? 'User'}
+              {user?.name ?? STRINGS.HOME.USER_FALLBACK}
             </Text>
           </View>
           <TouchableOpacity
@@ -36,7 +44,7 @@ const HomeScreenView: React.FC = memo(() => {
             onPress={handleProfilePress}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel="Open profile"
+            accessibilityLabel={STRINGS.HOME.A11Y_OPEN_PROFILE}
           >
             <Text style={[homeScreenStyles.avatarInitial, { color: colors.white }]}>
               {avatarInitial}
@@ -52,74 +60,66 @@ const HomeScreenView: React.FC = memo(() => {
               onPress={() => navigateToSection(stat.label as 'Tasks' | 'Notes' | 'Reminders')}
               activeOpacity={0.75}
               accessibilityRole="button"
-              accessibilityLabel={`Open ${stat.label}`}
+              accessibilityLabel={STRINGS.HOME.a11yOpenSection(stat.label)}
             >
               <Text style={homeScreenStyles.statEmoji}>{stat.emoji}</Text>
-              <Text style={[homeScreenStyles.statValue, { color: colors.textPrimary }]}> 
+              <Text style={[homeScreenStyles.statValue, { color: colors.textPrimary }]}>
                 {stat.value}
               </Text>
-              <Text style={[homeScreenStyles.statLabel, { color: colors.textSecondary }]}> 
+              <Text style={[homeScreenStyles.statLabel, { color: colors.textSecondary }]}>
                 {stat.label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {tasksDueToday.length > 0 ? (
+        {upcomingTasks.length > 0 ? (
           <View style={homeScreenStyles.dueTomorrowSection}>
             <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
-              Due Today
+              {STRINGS.HOME.SECTION_UPCOMING}
             </Text>
-            {tasksDueToday.map(task => (
+            {upcomingTasks.map(task => (
               <View
                 key={task.id}
                 style={[homeScreenStyles.dueTomorrowItem, { backgroundColor: colors.surface }]}
               >
-                <Text style={homeScreenStyles.dueTomorrowItemEmoji}>📅</Text>
+                <Text style={homeScreenStyles.dueTomorrowItemEmoji}>
+                  {STRINGS.TASK.ICON_DATE}
+                </Text>
                 <Text
                   style={[homeScreenStyles.dueTomorrowItemText, { color: colors.textPrimary }]}
                   numberOfLines={1}
                 >
                   {task.title}
                 </Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-
-        {tasksDueTomorrow.length > 0 ? (
-          <View style={homeScreenStyles.dueTomorrowSection}>
-            <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
-              Due Tomorrow
-            </Text>
-            {tasksDueTomorrow.map(task => (
-              <View
-                key={task.id}
-                style={[homeScreenStyles.dueTomorrowItem, { backgroundColor: colors.surface }]}
-              >
-                <Text style={homeScreenStyles.dueTomorrowItemEmoji}>📅</Text>
-                <Text
-                  style={[homeScreenStyles.dueTomorrowItemText, { color: colors.textPrimary }]}
-                  numberOfLines={1}
+                <View
+                  style={[
+                    homeScreenStyles.dueDateBadge,
+                    { backgroundColor: colors.primary + '20' },
+                  ]}
                 >
-                  {task.title}
-                </Text>
+                  <Text
+                    style={[homeScreenStyles.dueDateBadgeText, { color: colors.primary }]}
+                  >
+                    {task.dateLabel}
+                  </Text>
+                </View>
               </View>
             ))}
           </View>
         ) : null}
 
-        {tasksDueToday.length === 0 && tasksDueTomorrow.length === 0 ? (
+        {upcomingTasks.length === 0 ? (
           <>
             <Text style={[homeScreenStyles.sectionTitle, { color: colors.textPrimary }]}>
-              Today's overview
+              {STRINGS.HOME.SECTION_OVERVIEW}
             </Text>
             <View style={[homeScreenStyles.welcomeCard, { backgroundColor: colors.primary }]}>
               <Text style={[homeScreenStyles.welcomeTitle, { color: colors.white }]}>
-                You're all set! ☀️
+                {STRINGS.HOME.WELCOME_TITLE}
               </Text>
               <Text style={[homeScreenStyles.welcomeSubtitle, { color: `${colors.white}CC` }]}>
-                There is nothing due today. Take a moment to relax or plan for tomorrow. You've got this! 💪
+                {STRINGS.HOME.WELCOME_SUBTITLE}
               </Text>
             </View>
           </>
