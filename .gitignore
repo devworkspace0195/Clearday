@@ -2,6 +2,11 @@
 #
 .DS_Store
 
+# Environment secrets — never commit API keys
+.env
+.env.*
+!.env.example
+
 # Xcode
 #
 build/

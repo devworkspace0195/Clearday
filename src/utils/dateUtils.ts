@@ -1,5 +1,5 @@
 /** Returns midnight (start) of a given date in local time. */
-const startOfDay = (date: Date): Date => {
+export const startOfDay = (date: Date): Date => {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
   return d;
@@ -34,6 +34,13 @@ export const isTomorrow = (timestamp: number): boolean => {
   return timestamp >= t && timestamp < t + 86_400_000;
 };
 
+/** Formats a time-only timestamp as "3:30 PM". */
+export const formatTime = (timestamp: number): string =>
+  new Date(timestamp).toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
 /**
  * Formats a due-date timestamp for display.
  * "Today" | "Tomorrow" | "Mon, Jan 1"
@@ -48,7 +55,7 @@ export const formatDueDate = (timestamp: number): string => {
   if (timestamp >= tomorrowMs && timestamp < tomorrowMs + 86_400_000) {
     return 'Tomorrow';
   }
-  return new Date(timestamp).toLocaleDateString('en-US', {
+  return new Date(timestamp).toLocaleDateString(undefined, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',

@@ -3,7 +3,10 @@ export interface Task {
   title: string;
   completed: boolean;
   imageUri?: string;
+  /** Midnight-normalised timestamp of the due date (for Today/Tomorrow labels). */
   dueDate?: number;
+  /** Full datetime timestamp (dueDate + chosen hour:minute) — set only when user picks a time. */
+  dueTime?: number;
   createdAt: number;
 }
 

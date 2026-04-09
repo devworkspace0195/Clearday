@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
 import { useTaskScreenViewModel } from './TaskScreenViewModel';
 import { taskScreenStyles } from './TaskScreenStyles';
-import { formatDueDate, todayStart } from '../../utils/dateUtils';
+import { formatDueDate, formatTime, todayStart } from '../../utils/dateUtils';
 import { STRINGS } from '../../constants';
 import { FILTER_TABS, type Task, type TaskFilter } from './TaskScreenModel';
 
@@ -83,6 +83,7 @@ const TaskItem: React.FC<TaskItemProps> = memo(
             {task.dueDate ? (
               <Text style={[taskScreenStyles.taskDueDate, { color: subtleColor }]}>
                 {STRINGS.TASK.ICON_DATE} {formatDueDate(task.dueDate)}
+                {task.dueTime ? `  ${STRINGS.TASK.ICON_TIME} ${formatTime(task.dueTime)}` : ''}
               </Text>
             ) : null}
             {task.imageUri ? (
@@ -163,7 +164,9 @@ const TaskScreenView: React.FC = memo(() => {
     newTaskTitle,
     pendingImageUri,
     selectedDate,
+    selectedTime,
     showDatePicker,
+    showTimePicker,
     activeCount,
     completedCount,
     setSearchQuery,
@@ -176,8 +179,11 @@ const TaskScreenView: React.FC = memo(() => {
     takePhoto,
     removePendingImage,
     toggleDatePicker,
+    toggleTimePicker,
     clearDate,
+    clearTime,
     onDateChange,
+    onTimeChange,
     goBack,
   } = useTaskScreenViewModel();
 
@@ -187,6 +193,10 @@ const TaskScreenView: React.FC = memo(() => {
   const handleDateChange = useCallback(
     (event: DateTimePickerEvent, date?: Date) => onDateChange(event, date),
     [onDateChange],
+  );
+  const handleTimeChange = useCallback(
+    (event: DateTimePickerEvent, date?: Date) => onTimeChange(event, date),
+    [onTimeChange],
   );
 
   const renderItem = useCallback(
@@ -338,6 +348,18 @@ const TaskScreenView: React.FC = memo(() => {
           >
             <Text style={taskScreenStyles.iconButtonEmoji}>{STRINGS.TASK.ICON_DATE}</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              taskScreenStyles.iconButton,
+              { backgroundColor: selectedDate ? colors.background : colors.border },
+            ]}
+            onPress={selectedDate ? toggleTimePicker : undefined}
+            disabled={!selectedDate}
+            accessibilityRole="button"
+            accessibilityLabel={STRINGS.TASK.A11Y_TIME_PICKER}
+          >
+            <Text style={taskScreenStyles.iconButtonEmoji}>{STRINGS.TASK.ICON_TIME}</Text>
+          </TouchableOpacity>
         </View>
 
         {selectedDate ? (
@@ -355,6 +377,21 @@ const TaskScreenView: React.FC = memo(() => {
                 </Text>
               </TouchableOpacity>
             </View>
+            {selectedTime ? (
+              <View style={[taskScreenStyles.timeChip, { backgroundColor: colors.primary + '22' }]}>
+                <Text style={[taskScreenStyles.timeChipText, { color: colors.primary }]}>
+                  {formatTime(selectedTime.getTime())}
+                </Text>
+                <TouchableOpacity
+                  onPress={clearTime}
+                  accessibilityLabel={STRINGS.TASK.A11Y_REMOVE_TIME}
+                >
+                  <Text style={[taskScreenStyles.timeChipRemove, { color: colors.primary }]}>
+                    {STRINGS.TASK.ICON_REMOVE}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
           </View>
         ) : null}
 
@@ -365,6 +402,15 @@ const TaskScreenView: React.FC = memo(() => {
             display={Platform.OS === 'ios' ? 'inline' : 'default'}
             minimumDate={todayStart()}
             onChange={handleDateChange}
+          />
+        ) : null}
+
+        {showTimePicker ? (
+          <DateTimePicker
+            value={selectedTime ?? new Date()}
+            mode="time"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleTimeChange}
           />
         ) : null}
 

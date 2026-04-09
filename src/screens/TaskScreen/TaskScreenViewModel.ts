@@ -8,7 +8,12 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker';
 import type { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { todayStart } from '../../utils/dateUtils';
+import { startOfDay, todayStart, isToday } from '../../utils/dateUtils';
+import { fetchForecastSlots, findSlotForTime } from '../../utils/weatherApi';
+import {
+  requestNotificationPermission,
+  scheduleWeatherAlertNotification,
+} from '../../utils/reminderNotifications';
 import { STRINGS } from '../../constants';
 import { AppDispatch, RootState } from '../../store/store';
 import {
@@ -33,7 +38,9 @@ interface UseTaskScreenViewModelReturn {
   newTaskTitle: string;
   pendingImageUri: string | undefined;
   selectedDate: Date | undefined;
+  selectedTime: Date | undefined;
   showDatePicker: boolean;
+  showTimePicker: boolean;
   activeCount: number;
   completedCount: number;
   setSearchQuery: (q: string) => void;
@@ -46,8 +53,11 @@ interface UseTaskScreenViewModelReturn {
   takePhoto: () => Promise<void>;
   removePendingImage: () => void;
   toggleDatePicker: () => void;
+  toggleTimePicker: () => void;
   clearDate: () => void;
+  clearTime: () => void;
   onDateChange: (event: DateTimePickerEvent, date?: Date) => void;
+  onTimeChange: (event: DateTimePickerEvent, date?: Date) => void;
   goBack: () => void;
 }
 
@@ -61,7 +71,9 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [pendingImageUri, setPendingImageUri] = useState<string | undefined>();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState<Date | undefined>();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   // Load persisted tasks on mount
   useEffect(() => {
@@ -114,20 +126,65 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
     if (!title) {
       return;
     }
+
+    // Combine selectedDate (midnight) + selectedTime (hour/min) into a full timestamp
+    let dueTime: number | undefined;
+    if (selectedDate && selectedTime) {
+      const combined = new Date(selectedDate);
+      combined.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
+      dueTime = combined.getTime();
+    }
+
+    const taskId = `task_${Date.now()}`;
     const newTask: Task = {
-      id: `task_${Date.now()}`,
+      id: taskId,
       title,
       completed: false,
       imageUri: pendingImageUri,
       dueDate: selectedDate?.getTime(),
+      dueTime,
       createdAt: Date.now(),
     };
     dispatch(addTaskAction(newTask));
     setNewTaskTitle('');
     setPendingImageUri(undefined);
     setSelectedDate(undefined);
+    setSelectedTime(undefined);
     setShowDatePicker(false);
-  }, [newTaskTitle, pendingImageUri, selectedDate, dispatch]);
+    setShowTimePicker(false);
+
+    // Check forecast and schedule rain alert if task is today with a time
+    if (dueTime && selectedDate && isToday(selectedDate.getTime())) {
+      (async () => {
+        try {
+          const granted = await requestNotificationPermission();
+          if (!granted) { return; }
+
+          const position = await new Promise<{ coords: { latitude: number; longitude: number } }>(
+            (resolve, reject) => {
+              const Geolocation = require('react-native-geolocation-service').default;
+              Geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 600000,
+              });
+            },
+          );
+
+          const slots = await fetchForecastSlots(
+            position.coords.latitude,
+            position.coords.longitude,
+          );
+          const slot = findSlotForTime(slots, dueTime);
+          if (slot?.isRain) {
+            await scheduleWeatherAlertNotification(taskId, title, dueTime, slot.description);
+          }
+        } catch {
+          // Silent — rain check is best-effort
+        }
+      })();
+    }
+  }, [newTaskTitle, pendingImageUri, selectedDate, selectedTime, dispatch]);
 
   const toggleDatePicker = useCallback(() => {
     setShowDatePicker(prev => {
@@ -140,9 +197,30 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
     });
   }, []);
 
+  const toggleTimePicker = useCallback(() => {
+    setShowTimePicker(prev => !prev);
+    setShowDatePicker(false);
+  }, []);
+
+  const clearTime = useCallback(() => {
+    setSelectedTime(undefined);
+    setShowTimePicker(false);
+  }, []);
+
+  const onTimeChange = useCallback((event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowTimePicker(false);
+    }
+    if (event.type !== 'dismissed' && date) {
+      setSelectedTime(date);
+    }
+  }, []);
+
   const clearDate = useCallback(() => {
     setSelectedDate(undefined);
+    setSelectedTime(undefined);
     setShowDatePicker(false);
+    setShowTimePicker(false);
   }, []);
 
   const onDateChange = useCallback((event: DateTimePickerEvent, date?: Date) => {
@@ -150,7 +228,10 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
       setShowDatePicker(false);
     }
     if (event.type !== 'dismissed' && date) {
-      setSelectedDate(date);
+      // Normalise to midnight so the stored timestamp always compares cleanly
+      // against startOfDay(). Without this, iOS inline picker can return the
+      // device's current time, causing edge-case mismatches near midnight.
+      setSelectedDate(startOfDay(date));
     }
   }, []);
 
@@ -231,7 +312,9 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
     newTaskTitle,
     pendingImageUri,
     selectedDate,
+    selectedTime,
     showDatePicker,
+    showTimePicker,
     activeCount,
     completedCount,
     setSearchQuery,
@@ -244,8 +327,11 @@ export const useTaskScreenViewModel = (): UseTaskScreenViewModelReturn => {
     takePhoto,
     removePendingImage,
     toggleDatePicker,
+    toggleTimePicker,
     clearDate,
+    clearTime,
     onDateChange,
+    onTimeChange,
     goBack,
   };
 };

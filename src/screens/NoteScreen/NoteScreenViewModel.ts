@@ -1,10 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootState } from '../../store/store';
 import { RootStackParamList } from '../../navigation/AppNavigator';
-import { addNote, deleteNote, updateNote } from '../../store/slices/notesSlice';
+import { addNote, deleteNote, setNotes, updateNote } from '../../store/slices/notesSlice';
+import { storage } from '../../utils/storage';
+import { ASYNC_STORAGE_KEYS } from '../../constants';
+import logger from '../../utils/logger';
 import type { Note } from './NoteScreenModel';
 
 type NoteScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Note'>;
@@ -46,6 +49,21 @@ export const useNoteScreenViewModel = (): UseNoteScreenViewModelReturn => {
     titleDraft: '',
     bodyDraft: '',
   });
+
+  // Load persisted notes on mount
+  useEffect(() => {
+    storage.getObject<Note[]>(ASYNC_STORAGE_KEYS.NOTES)
+      .then(stored => {
+        if (stored && stored.length > 0) { dispatch(setNotes(stored)); }
+      })
+      .catch(err => logger.error('loadNotes failed', err));
+  }, [dispatch]);
+
+  // Persist notes on every change
+  useEffect(() => {
+    storage.setObject(ASYNC_STORAGE_KEYS.NOTES, notes)
+      .catch(err => logger.error('saveNotes failed', err));
+  }, [notes]);
 
   const filteredNotes = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();

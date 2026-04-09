@@ -169,6 +169,24 @@ export const taskScreenStyles = StyleSheet.create({
     marginTop: 2,
   },
 
+  // ─── Time chip (reuses date chip layout) ──────────────────
+  timeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: SPACING.xs,
+  },
+  timeChipText: {
+    fontSize: FONT_SIZE.xs,
+    fontWeight: FONT_WEIGHT.medium,
+  },
+  timeChipRemove: {
+    fontSize: 10,
+    fontWeight: FONT_WEIGHT.bold,
+  },
+
   // ─── Add button ───────────────────────────────────────────
   addButton: {
     height: 44,
