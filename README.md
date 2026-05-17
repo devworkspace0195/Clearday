@@ -26,14 +26,21 @@ Staying organized across tasks, notes, and daily habits requires jumping between
 
 ## Architecture
 
-Clearday/
-├── src/
-│   ├── models/          # Data models and business logic
-│   ├── viewmodels/      # State management and business rules
-│   ├── views/           # UI components and screens
-│   ├── navigation/      # App navigation structure
-│   ├── store/           # Redux store configuration
-│   └── utils/           # Helper functions and utilities
+Project structure follows MVVM pattern for clean separation of concerns:
+
+**Folder Structure:**
+
+- **models/** - Data models and business logic
+- **viewmodels/** - State management and business rules  
+- **views/** - UI components and screens
+- **navigation/** - App navigation structure
+- **store/** - Redux store configuration
+- **utils/** - Helper functions and utilities
+
+**MVVM Pattern:**
+- **Model** - Data structures and persistence logic (AsyncStorage)
+- **ViewModel** - Business logic and state management (Redux Toolkit)
+- **View** - UI components (React Native screens)
 
 **MVVM Pattern:**
 - **Model** - Data structures and persistence logic (AsyncStorage)
