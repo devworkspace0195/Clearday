@@ -1,97 +1,131 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Clearday
 
-# Getting Started
+A personal productivity companion for managing tasks, notes, and daily activities — built with React Native and modern mobile architecture patterns.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Problem Statement
 
-## Step 1: Start Metro
+Staying organized across tasks, notes, and daily habits requires jumping between multiple apps. Clearday consolidates everything into one clean, offline-first mobile experience with no backend dependencies or subscriptions.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **React Native** - Cross-platform mobile framework
+- **TypeScript** - Type-safe development
+- **Redux Toolkit** - Predictable state management
+- **AsyncStorage** - Persistent local storage
+- **MVVM Architecture** - Clean separation of concerns
+- **React Navigation** - Screen routing and navigation
 
-```sh
-# Using npm
-npm start
+## Key Features
 
-# OR using Yarn
-yarn start
+- **Task Management** - Create, organize, and track todos with due dates and priorities
+- **Quick Notes** - Capture thoughts and ideas with rich text support
+- **Activity Tracking** - Log daily habits and routines
+- **Offline-First** - All data stored locally, no internet required
+- **Clean Architecture** - MVVM pattern for maintainable, testable code
+- **Type Safety** - Full TypeScript coverage for reliability
+
+## Architecture
+
+
+Clearday/
+├── src/
+│   ├── models/          # Data models and business logic
+│   ├── viewmodels/      # State management and business rules
+│   ├── views/           # UI components and screens
+│   ├── navigation/      # App navigation structure
+│   ├── store/           # Redux store configuration
+│   └── utils/           # Helper functions and utilities
+
+**MVVM Pattern:**
+- **Model** - Data structures and persistence logic (AsyncStorage)
+- **ViewModel** - Business logic and state management (Redux Toolkit)
+- **View** - UI components (React Native screens)
+
+## Screenshots
+
+*Screenshots coming soon*
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/devworkspace0195/Clearday.git
+
+# Navigate to project directory
+cd Clearday
+
+# Install dependencies
+npm install
+
+# Install iOS pods (Mac only)
+cd ios && pod install && cd ..
+
+# Run on iOS
+npx react-native run-ios
+
+# Run on Android
+npx react-native run-android
 ```
 
-## Step 2: Build and run your app
+## Project Structure
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+src/
+├── models/
+│   ├── Task.ts          # Task data model
+│   ├── Note.ts          # Note data model
+│   └── Activity.ts      # Activity data model
+├── viewmodels/
+│   ├── TaskViewModel.ts # Task business logic
+│   └── ...
+├── views/
+│   ├── screens/         # Main app screens
+│   └── components/      # Reusable UI components
+└── store/
+├── slices/          # Redux Toolkit slices
+└── store.ts         # Store configuration
 
-### Android
+## Tech Highlights
 
-```sh
-# Using npm
-npm run android
+**State Management:**
+- Redux Toolkit for global state
+- AsyncStorage for persistence
+- Type-safe actions and reducers
 
-# OR using Yarn
-yarn android
-```
+**Architecture Benefits:**
+- Testable business logic (ViewModels)
+- Reusable UI components (Views)
+- Clear separation of concerns
+- Easy to maintain and extend
 
-### iOS
+**Development Workflow:**
+- TypeScript for type safety
+- ESLint for code quality
+- Modular component structure
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## What I Learned
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+- **MVVM Architecture** - Implementing clean architecture in React Native
+- **Redux Toolkit** - Modern Redux patterns with less boilerplate
+- **AsyncStorage** - Persistent local data without backend complexity
+- **TypeScript in RN** - Type-safe mobile development
+- **Offline-First Apps** - Building reliable apps without network dependency
 
-```sh
-bundle install
-```
+## Future Enhancements
 
-Then, and every time you update your native dependencies, run:
+- [ ] Cloud sync (optional backup)
+- [ ] Recurring tasks and reminders
+- [ ] Dark mode support
+- [ ] Export data to CSV/JSON
+- [ ] Widget support (iOS/Android)
+- [ ] Voice notes integration
 
-```sh
-bundle exec pod install
-```
+## Contact
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+**Diya Juliet Xavier**  
+📧 diyajulietxavier@gmail.com  
+💼 [LinkedIn](https://linkedin.com/in/diya-xavier)  
+🐙 [GitHub](https://github.com/devworkspace0195)
 
-```sh
-# Using npm
-npm run ios
+---
 
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+*A local-first productivity app built with modern React Native architecture*
