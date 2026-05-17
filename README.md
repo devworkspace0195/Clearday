@@ -26,7 +26,6 @@ Staying organized across tasks, notes, and daily habits requires jumping between
 
 ## Architecture
 
-
 Clearday/
 ├── src/
 │   ├── models/          # Data models and business logic
