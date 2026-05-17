@@ -75,20 +75,21 @@ npx react-native run-android
 
 ## Project Structure
 
-src/
-├── models/
-│   ├── Task.ts          # Task data model
-│   ├── Note.ts          # Note data model
-│   └── Activity.ts      # Activity data model
-├── viewmodels/
-│   ├── TaskViewModel.ts # Task business logic
-│   └── ...
-├── views/
-│   ├── screens/         # Main app screens
-│   └── components/      # Reusable UI components
-└── store/
-├── slices/          # Redux Toolkit slices
-└── store.ts         # Store configuration
+Main source code organization:
+
+- **models/**
+  - `Task.ts` - Task data model
+  - `Note.ts` - Note data model
+  - `Activity.ts` - Activity data model
+- **viewmodels/**
+  - `TaskViewModel.ts` - Task business logic
+  - Additional ViewModels for Notes and Activities
+- **views/**
+  - `screens/` - Main app screens
+  - `components/` - Reusable UI components
+- **store/**
+  - `slices/` - Redux Toolkit slices
+  - `store.ts` - Store configuration
 
 ## Tech Highlights
 
